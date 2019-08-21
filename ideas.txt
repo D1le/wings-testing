@@ -1,0 +1,10 @@
+-- projects
+wings-testing
+  wings-junit-jupiter
+  wings-junit-vintage
+  wings-coverage
+  wings-coverage-sonar-plugin
+  wings-testing-maven-plugin
+  wings-testing-gradle-plugin
+wings-installer
+wings-metrics
