@@ -3,58 +3,48 @@ package org.wings.prpc.remote;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import org.wings.prpc.remote.dependency.AttachmentResolver;
+import org.wings.prpc.remote.configuration.ExecutorConfiguration;
 
 import java.io.*;
 import java.util.Base64;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 public class DefaultExecutor implements Executor {
 
     private OkHttpClient client;
-    private String endpoint;
     private ExecutorConfiguration configuration;
 
-    public DefaultExecutor() {
-        this(new OkHttpClient.Builder().build());
-    }
-
-    DefaultExecutor(OkHttpClient okHttpClient) {
-        client = okHttpClient;
-    }
-
-    DefaultExecutor(Builder builder) {
-        this.configuration = builder.configuration;
-        this.client = builder.okHttpClientBuilder
-                .callTimeout(configuration.getTimeout(), TimeUnit.SECONDS)
-                .build();
-        this.endpoint = new HttpUrl.Builder()
-                .scheme(builder.configuration.getScheme())
-                .host(builder.configuration.getHost())
-                .port(Integer.parseInt(builder.configuration.getPort()))
-                .addPathSegments(configuration.getRestPath())
-                .addPathSegments("mon/v1/test")
-                .build()
-                .toString();
+    DefaultExecutor(OkHttpClient client, ExecutorConfiguration configuration) {
+        this.client = client;
+        this.configuration = configuration;
     }
 
     @Override
     public <R extends Serializable> Future<Output<R>> execute(ActionContainer<R> container) {
-        RequestBody body = prepareBody(container);
-        Request request = new Request.Builder()
-                .url(endpoint)
+        CompletableFuture<Output<R>> future = new CompletableFuture<>();
+        RequestBody body = createBody(container);
+        Request request = createRequest(body);
+        enqueueRequest(request, future);
+        return future;
+    }
+
+    private Request createRequest(RequestBody body) {
+        return new Request.Builder()
+                .url(configuration.getExecutorEndpoint())
                 .post(body)
                 .build();
+    }
 
-        CompletableFuture<Output<R>> future = new CompletableFuture<>();
+    private <R extends Serializable> void enqueueRequest(Request request, CompletableFuture<Output<R>> future) {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 future.complete(Output.failed(e));
             }
 
+            @SuppressWarnings("unchecked")
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 Output<R> output;
@@ -76,7 +66,6 @@ public class DefaultExecutor implements Executor {
                 future.complete(output);
             }
         });
-        return future;
     }
 
     private byte[] serialize(Object object) throws IOException {
@@ -102,9 +91,10 @@ public class DefaultExecutor implements Executor {
         return Base64.getDecoder().decode(base64String);
     }
 
-    private RequestBody prepareBody(ActionContainer<?> container) {
+    private RequestBody createBody(ActionContainer<?> container) {
         MultipartBody.Builder bodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
         try {
+            //TODO: rename to action
             bodyBuilder.addFormDataPart("input", encode(serialize(container.getAction())));
             handleDependencies(container, bodyBuilder);
         } catch (IOException /*| ClassNotFoundException*/ ex) {
@@ -118,31 +108,6 @@ public class DefaultExecutor implements Executor {
         for (Attachment attachment : attachments) {
             bodyBuilder.addFormDataPart(attachment.getName(), attachment.getName(),
                     RequestBody.create(attachment.getBytes(), MediaType.parse(attachment.getType())));
-        }
-    }
-
-    public static class Builder {
-        private OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder();
-//        private String endpoint;
-        private ExecutorConfiguration configuration;
-
-        public Builder client(OkHttpClient.Builder okHttpClientBuilder) {
-            this.okHttpClientBuilder = okHttpClientBuilder;
-            return this;
-        }
-
-//        public Builder endpoint(String endpoint) {
-//            this.endpoint = endpoint;
-//            return this;
-//        }
-
-        public Builder withConfiguration(ExecutorConfiguration configuration) {
-            this.configuration = configuration;
-            return this;
-        }
-
-        public DefaultExecutor build() {
-            return new DefaultExecutor(this);
         }
     }
 }

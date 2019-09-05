@@ -1,52 +1,37 @@
 package org.wings.prpc.remote;
 
-import net.bytebuddy.ByteBuddy;
-import net.bytebuddy.agent.ByteBuddyAgent;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.objenesis.Objenesis;
-import org.wings.prpc.remote.dependency.*;
+import org.stagemonitor.configuration.ConfigurationRegistry;
+import org.stagemonitor.configuration.source.SimpleSource;
+import org.wings.prpc.remote.configuration.ExecutorConfiguration;
 
-import java.util.Date;
+import java.util.concurrent.Future;
 
 import static org.mockito.Mockito.mock;
 
-class DefaultExecutorTest {
-
-    public static class DateChecker implements Action<String> {
-        @Override
-        public String get() {
-            return new Date().toString();
-        }
-    }
-
-    public static class MockChecker implements Action<String> {
-        @Override
-        public String get() {
-            return mock(Date.class).toString();
-        }
-    }
-
+class DefaultExecutorTest extends ExecutorTestSupport {
 
     @Test
-    void name3() throws Exception {
-        Executor executor = new DefaultExecutor.Builder()
-                .withConfiguration(new PropertyFileConfiguration("wings-remote.properties"))
-                .build();
+    void happyPath() throws Exception {
+        server.setDispatcher(DEFAULT_DISPATCHER);
+        server.start();
+
+        HttpUrl url = server.url("");
+
+        SimpleSource source = new SimpleSource();
+        source.add("port", String.valueOf(url.port()));
+
+        Executor executor = new DefaultExecutor(new OkHttpClient(), getConfiguration(source));
 
         ActionContainer<String> ac = new ActionContainer<>();
-        ac.setAction(new MockChecker());
-        ac.dependsOn(new ClassDependency(MockChecker.class, true, false));
-        ac.dependsOn(new PackageDependency(Action.class));
-        ac.dependsOn(new JarDependency(Mockito.class));
-        ac.dependsOn(new JarDependency(ByteBuddy.class));
-        ac.dependsOn(new JarDependency(ByteBuddyAgent.class));
-        ac.dependsOn(new JarDependency(Objenesis.class));
-        ac.addDependencyResolver(new ClassDependencyResolver());
-        ac.addDependencyResolver(new PackageDependencyResolver());
-        ac.addDependencyResolver(new JarDependencyResolver());
+        ac.setAction((Action<String>) () -> "some_response");
 
-        Output<String> stringOutput = executor.execute(ac).get();
-        System.out.println(stringOutput);
+        Future<Output<String>> execute = executor.execute(ac);
+        Output<String> output = execute.get();
+
+        System.out.println(output);
     }
+
 }

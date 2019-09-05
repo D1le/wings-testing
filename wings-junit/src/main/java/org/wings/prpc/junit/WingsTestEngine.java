@@ -10,9 +10,8 @@ import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine;
-import org.wings.prpc.remote.DefaultExecutor;
+import org.wings.prpc.remote.DefaultExecutorBuilder;
 import org.wings.prpc.remote.Executor;
-import org.wings.prpc.remote.PropertyFileConfiguration;
 
 public class WingsTestEngine extends HierarchicalTestEngine<WingsEngineExecutionContext> {
 
@@ -48,9 +47,7 @@ public class WingsTestEngine extends HierarchicalTestEngine<WingsEngineExecution
     }
 
     private Executor createExecutor() {
-        return new DefaultExecutor.Builder()
-                .withConfiguration(new PropertyFileConfiguration("wings-remote.properties"))
-                .build();
+        return new DefaultExecutorBuilder().build();
     }
 
 }

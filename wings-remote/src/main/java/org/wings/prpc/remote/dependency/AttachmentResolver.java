@@ -6,14 +6,15 @@ import org.apache.tika.Tika;
 import org.wings.prpc.remote.*;
 import org.wings.prpc.remote.dependency.AbstractDependencyResolver;
 
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
+import java.util.*;
 
 public class AttachmentResolver {
 
     public Set<Attachment> resolve(ActionContainer<?> action) {
+        if(action.getDependencies().isEmpty()) {
+            return Collections.emptySet();
+        }
+
         Deque<Dependency> queue = new LinkedList<>(action.getDependencies());
         Set<Dependency> processed = new HashSet<>();
         Set<Attachment> attachments = new HashSet<>();
