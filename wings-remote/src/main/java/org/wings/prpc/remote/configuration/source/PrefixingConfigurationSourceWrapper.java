@@ -1,4 +1,4 @@
-package org.wings.prpc.remote.configuration;
+package org.wings.prpc.remote.configuration.source;
 
 import org.stagemonitor.configuration.source.ConfigurationSource;
 

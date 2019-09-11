@@ -2,8 +2,8 @@ package org.wings.prpc.remote;
 
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
-import org.wings.prpc.remote.dependency.AttachmentResolver;
 import org.wings.prpc.remote.configuration.ExecutorConfiguration;
+import org.wings.prpc.remote.dependency.AttachmentResolver;
 
 import java.io.*;
 import java.util.Base64;
@@ -94,10 +94,9 @@ public class DefaultExecutor implements Executor {
     private RequestBody createBody(ActionContainer<?> container) {
         MultipartBody.Builder bodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
         try {
-            //TODO: rename to action
             bodyBuilder.addFormDataPart("input", encode(serialize(container.getAction())));
             handleDependencies(container, bodyBuilder);
-        } catch (IOException /*| ClassNotFoundException*/ ex) {
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
         return bodyBuilder.build();

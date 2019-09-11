@@ -1,6 +1,5 @@
 package org.wings.prpc.junit;
 
-import dile.NewTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.engine.config.DefaultJupiterConfiguration;
 import org.junit.jupiter.engine.config.JupiterConfiguration;
@@ -21,7 +20,7 @@ class WingsDiscoverySelectorResolverTest {
     @Test
     void name1() {
         EngineDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
-                .selectors(DiscoverySelectors.selectClass(NewTest.class))
+                .selectors(DiscoverySelectors.selectClass(String.class))
                 .build();
 
         JupiterConfiguration configuration = new DefaultJupiterConfiguration(request.getConfigurationParameters());

@@ -1,6 +1,5 @@
 package org.wings.prpc.remote;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 public class Attachment {

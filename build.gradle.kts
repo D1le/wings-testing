@@ -1,16 +1,12 @@
 allprojects {
-    group = "org.wings"
-    version = "0.1.0"
 
     repositories {
-        mavenLocal()
+        // mavenLocal()
         mavenCentral()
-    }
-}
-
-tasks {
-    withType<Wrapper> {
-        gradleVersion = "5.6"
-        distributionType = Wrapper.DistributionType.ALL
+        maven(url = "https://oss.sonatype.org/content/repositories/snapshots") {
+            mavenContent {
+                snapshotsOnly()
+            }
+        }
     }
 }

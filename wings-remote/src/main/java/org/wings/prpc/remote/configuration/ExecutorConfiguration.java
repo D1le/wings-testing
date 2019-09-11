@@ -2,6 +2,8 @@ package org.wings.prpc.remote.configuration;
 
 import org.stagemonitor.configuration.ConfigurationOption;
 import org.stagemonitor.configuration.ConfigurationOptionProvider;
+import org.wings.prpc.remote.configuration.converter.TimeDuration;
+import org.wings.prpc.remote.configuration.converter.TimeDurationValueConverter;
 
 import java.net.URL;
 import java.util.Optional;
@@ -34,13 +36,17 @@ public class ExecutorConfiguration extends ConfigurationOptionProvider {
             .key("restpath")
             .buildWithDefault("/prweb/PRRestService");
 
-    private ConfigurationOption<Integer> timeout = ConfigurationOption.integerOption()
+    private ConfigurationOption<TimeDuration> timeout = TimeDurationValueConverter.durationOption("m")
             .key("timeout")
-            .buildWithDefault(30);
+            .buildWithDefault(TimeDuration.of("5m"));
 
     private ConfigurationOption<String> servicePath = ConfigurationOption.stringOption()
             .key("servicepath")
             .buildWithDefault("/mon/v1/test");
+
+    private ConfigurationOption<Boolean> verifyServerCert = ConfigurationOption.booleanOption()
+            .key("verify_server_cert")
+            .buildWithDefault(true);
 
     public String getScheme() {
         return scheme.get();
@@ -66,7 +72,7 @@ public class ExecutorConfiguration extends ConfigurationOptionProvider {
         return restPath.get();
     }
 
-    public int getTimeout() {
+    public TimeDuration getTimeout() {
         return timeout.get();
     }
 
@@ -74,15 +80,15 @@ public class ExecutorConfiguration extends ConfigurationOptionProvider {
         return servicePath.get();
     }
 
+    public boolean isVerifyServerCert() {
+        return verifyServerCert.get();
+    }
+
     public URL getExecutorEndpoint() {
-//        new HttpUrl.Builder()
-//                .
         try {
             return new URL(getScheme(), getHost(), getPort(), getRestPath() + getServicePath());
         } catch (Exception ex) {
-
+            return null;
         }
-        return null;
     }
-
 }

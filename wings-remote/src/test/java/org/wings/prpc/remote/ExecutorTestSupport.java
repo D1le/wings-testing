@@ -36,12 +36,15 @@ public class ExecutorTestSupport {
         server.close();
     }
 
-    ExecutorConfiguration getConfiguration(ConfigurationSource source) {
+    ConfigurationRegistry getRegistry(ConfigurationSource source) {
         return new ConfigurationRegistry.Builder()
                 .addOptionProvider(new ExecutorConfiguration())
                 .addConfigSource(source)
-                .build()
-                .getConfig(ExecutorConfiguration.class);
+                .build();
+    }
+
+    ExecutorConfiguration getConfiguration(ConfigurationSource source) {
+        return getRegistry(source).getConfig(ExecutorConfiguration.class);
     }
 
     public static class DefaultDispatcher extends Dispatcher {
