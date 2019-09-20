@@ -1,0 +1,15 @@
+{
+  "name": "wings-testing-docs",
+  "version": "0.1.0",
+  "main": "index.js",
+  "repository": "git@github.com:alexey-lapin/wings-testing.git",
+  "author": "Alexey Lapin <alexey-lapin@protonmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "docs:dev": "vuepress dev src/docs",
+    "docs:build": "vuepress build src/docs"
+  },
+  "devDependencies": {
+    "vuepress": "^1.1.0"
+  }
+}
