@@ -1,1 +1,24 @@
 language: java
+
+cache: yarn
+
+install:
+  - yarn
+
+script: skip
+
+before_deploy:
+  - yarn docs:build
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN
+  keep_history: true
+  local_dir: build/site
+  on:
+    branch: master
+
+branches:
+  except:
+    - gh-pages

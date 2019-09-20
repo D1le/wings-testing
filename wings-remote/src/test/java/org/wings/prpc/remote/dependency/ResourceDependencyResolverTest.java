@@ -1,6 +1,7 @@
 package org.wings.prpc.remote.dependency;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.wings.prpc.remote.Attachment;
 import org.wings.prpc.remote.DependencyResolution;
@@ -34,6 +35,7 @@ class ResourceDependencyResolverTest extends AbstractDependencyResolverTest {
         assertThat(attachment.getBytes()).isNotEmpty();
     }
 
+    @Disabled
     @Test
     void should_resolve_absoluteDependency() {
         ResourceDependency dependency = new ResourceDependency(EmptyClass.class, "/res0.txt");

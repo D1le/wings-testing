@@ -1,6 +1,7 @@
 package org.wings.prpc.junit;
 
-import dile.NewTest;
+//import dile.NewTest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.engine.config.DefaultJupiterConfiguration;
 import org.junit.jupiter.engine.config.JupiterConfiguration;
@@ -18,18 +19,18 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class WingsDiscoverySelectorResolverTest {
 
-    @Test
-    void name1() {
-        EngineDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
-                .selectors(DiscoverySelectors.selectClass(NewTest.class))
-                .build();
-
-        JupiterConfiguration configuration = new DefaultJupiterConfiguration(request.getConfigurationParameters());
-        JupiterEngineDescriptor jupiterEngineDescriptor =
-                new JupiterEngineDescriptor(UniqueId.forEngine(JupiterEngineDescriptor.ENGINE_ID), configuration);
-        WingsEngineDescriptor wingsEngineDescriptor =
-                new WingsEngineDescriptor(UniqueId.forEngine(WingsEngineDescriptor.ENGINE_ID), configuration , jupiterEngineDescriptor);
-
-        new WingsDiscoverySelectorResolver().resolveSelectors(request, wingsEngineDescriptor);
-    }
+//    @Test
+//    void name1() {
+//        EngineDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
+//                .selectors(DiscoverySelectors.selectClass(String.class))
+//                .build();
+//
+//        JupiterConfiguration configuration = new DefaultJupiterConfiguration(request.getConfigurationParameters());
+//        JupiterEngineDescriptor jupiterEngineDescriptor =
+//                new JupiterEngineDescriptor(UniqueId.forEngine(JupiterEngineDescriptor.ENGINE_ID), configuration);
+//        WingsEngineDescriptor wingsEngineDescriptor =
+//                new WingsEngineDescriptor(UniqueId.forEngine(WingsEngineDescriptor.ENGINE_ID), configuration , jupiterEngineDescriptor);
+//
+//        new WingsDiscoverySelectorResolver().resolveSelectors(request, wingsEngineDescriptor);
+//    }
 }
